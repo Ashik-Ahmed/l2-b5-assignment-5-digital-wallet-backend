@@ -1,5 +1,5 @@
 export interface IUser extends Document {
-    _id: string;
+    // _id: string;
     name: string;
     email: string;
     phone: string;
@@ -8,7 +8,7 @@ export interface IUser extends Document {
     isActive: boolean;
     isApproved?: boolean; // Only for agents
     commissionRate?: number; // Only for agents
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
