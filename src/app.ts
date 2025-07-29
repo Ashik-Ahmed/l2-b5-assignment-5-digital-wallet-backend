@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import express, { Request, Response } from 'express'
 import cors from 'cors';
 import router from './app/routes';
+import { globalErrorHandler } from './app/middlewares/globalErrorHandler';
+import notFound from './app/middlewares/notFound';
 
 
 const app = express()
@@ -15,5 +18,10 @@ app.get("/", (req: Request, res: Response) => {
         message: "Welcome to Digital Wallet Backend"
     });
 });
+
+// Global error handler
+app.use(globalErrorHandler);
+
+app.use(notFound);
 
 export default app;
