@@ -3,6 +3,8 @@ import { IUser } from "../user/user.interface"
 import { User } from "../user/user.model";
 import httpStatus from "http-status-codes";
 import bcrypt from "bcryptjs";
+import { envVars } from "../../config/env";
+import jwt from "jsonwebtoken";
 
 const credentialLogin = async (payload: Partial<IUser>) => {
 
@@ -20,12 +22,22 @@ const credentialLogin = async (payload: Partial<IUser>) => {
         throw new AppError(httpStatus.UNAUTHORIZED, "Invalid password");
     }
 
+    const jwtPayload = {
+        userId: isUserExist._id,
+        role: isUserExist.role,
+        email: isUserExist.email
+    }
+    const accessToken = jwt.sign(jwtPayload, envVars.JWT_SECRET, {
+        expiresIn: "1d"
+    })
+
 
     return {
         _id: isUserExist._id,
         email: isUserExist.email,
         name: isUserExist.name,
-        role: isUserExist.role
+        role: isUserExist.role,
+        accessToken
     }
 }
 

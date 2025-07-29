@@ -7,13 +7,13 @@ import { AuthService } from "./auth.service";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const credentialLogin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
-    const user = await AuthService.credentialLogin(req.body);
+    const loginInfo = await AuthService.credentialLogin(req.body);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
         message: "Logged in successfully",
-        data: user
+        data: loginInfo
     });
 });
 
