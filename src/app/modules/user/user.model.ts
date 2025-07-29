@@ -25,8 +25,7 @@ const userSchema = new Schema<IUser>({
     password: {
         type: String,
         required: [true, 'Password is required'],
-        minlength: [6, 'Password must be at least 6 characters long'],
-        select: false
+        minlength: [6, 'Password must be at least 6 characters long']
     },
     role: {
         type: String,
@@ -57,7 +56,7 @@ userSchema.pre('save', async function (next) {
     // Hash password if modified
     if (this.isModified('password')) {
         try {
-            const saltRounds = 12;
+            const saltRounds = 10;
             this.password = await bcrypt.hash(this.password, saltRounds);
         } catch (error) {
             return next(error as Error);

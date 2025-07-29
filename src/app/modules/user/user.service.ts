@@ -3,13 +3,17 @@ import { User } from "./user.model";
 
 const createUser = async (payload: Partial<IUser>) => {
 
-    const { name, email, phone, password, role } = payload;
+    const { name, email, phone, password, ...rest } = payload;
+
+    // mongoose pre-hook is hashing password 
+    // const hashedPassword = await bcrypt.hash(password as string, 10);
+
     const user = await User.create({
         name,
         email,
         phone,
         password,
-        role
+        ...rest
     });
     return user;
 }
