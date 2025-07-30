@@ -26,21 +26,27 @@ const createUser = async (payload: Partial<IUser>) => {
         throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, "User creation failed");
     }
 
-    // Create wallet for the user
-    const wallet = await Wallet.create({ userId: user._id }); // Default initial balance
-    if (!wallet) {
-        throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, "Wallet creation failed");
+    // Automatically create wallet for user or agent
+    if (user.role === "user" || user.role === "agent") {
+        const wallet = await Wallet.create({ userId: user._id });
+        if (!wallet) {
+            throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, "Wallet creation failed");
+        }
+        user.wallet = wallet._id;
+        await user.save();
     }
-    user.wallet = wallet._id;
-    await user.save();
+
     // console.log("User created successfully:", user); 
     // console.log("Wallet created successfully:", wallet);
 
-    return user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: pass, ...userWithoutPassword } = user.toObject();
+
+    return userWithoutPassword;
 }
 
 const getAllUsers = async () => {
-    const users = await User.find({});
+    const users = await User.find({}).select("-password -__v");
 
     const totalUsers = await User.countDocuments({});
 

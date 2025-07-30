@@ -1,6 +1,6 @@
 import { User } from "../modules/user/user.model";
 import { envVars } from "../config/env";
-import { IUser } from "../modules/user/user.interface";
+import { IUser, USER_ROLES } from "../modules/user/user.interface";
 
 export const seedAdmin = async () => {
     try {
@@ -17,7 +17,7 @@ export const seedAdmin = async () => {
 
         const payload: Partial<IUser> = {
             name: "Admin User",
-            role: "admin",
+            role: USER_ROLES.ADMIN,
             email: envVars.SUPER_ADMIN_EMAIL,
             password: envVars.SUPER_ADMIN_PASSWORD,
             phone: "01710112233",
@@ -25,8 +25,8 @@ export const seedAdmin = async () => {
         }
 
         const admin = await User.create(payload)
-        console.log("Admin User Created Successfuly! \n");
-        console.log(admin);
+        console.log("Admin User Created: \n", admin);
+
     } catch (error) {
         console.log(error);
     }
