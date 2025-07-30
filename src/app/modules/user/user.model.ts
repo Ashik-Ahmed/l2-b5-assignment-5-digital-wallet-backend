@@ -1,6 +1,7 @@
 import { model, Schema } from "mongoose";
 import { IUser } from "./user.interface";
 import bcrypt from "bcryptjs";
+import { envVars } from "../../config/env";
 
 const userSchema = new Schema<IUser>({
     name: {
@@ -56,8 +57,7 @@ userSchema.pre('save', async function (next) {
     // Hash password if modified
     if (this.isModified('password')) {
         try {
-            const saltRounds = 10;
-            this.password = await bcrypt.hash(this.password, saltRounds);
+            this.password = await bcrypt.hash(this.password, Number(envVars.BCRYPT_SALT_ROUNDS));
         } catch (error) {
             return next(error as Error);
         }

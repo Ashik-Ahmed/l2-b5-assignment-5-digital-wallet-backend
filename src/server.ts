@@ -21,8 +21,8 @@ const startServer = async () => {
 }
 
 (async () => {
-    startServer();
-    seedAdmin();
+    await startServer();
+    await seedAdmin();
 })();
 
 

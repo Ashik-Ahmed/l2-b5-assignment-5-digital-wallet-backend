@@ -12,15 +12,17 @@ export const checkAuth = (...authRoles: string[]) => async (req: Request, res: R
         }
         // const verifiedToken = jwt.verify(accessToken, process.env.JWT_SECRET as string);
 
-        const verifiedToken = verifyToken(accessToken, envVars.JWT_SECRET) as JwtPayload;
+        const decodedToken = verifyToken(accessToken, envVars.JWT_SECRET) as JwtPayload;
 
-        if (!verifiedToken) {
+        if (!decodedToken) {
             throw new AppError(403, "Invalid access token");
         }
 
-        if (!authRoles.includes(verifiedToken.role)) {
+        if (!authRoles.includes(decodedToken.role)) {
             throw new AppError(401, "Unauthorized access");
         }
+
+        req.user = decodedToken;
 
         next();
 
