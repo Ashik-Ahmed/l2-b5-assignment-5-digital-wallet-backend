@@ -3,8 +3,7 @@ import { IUser } from "../user/user.interface"
 import { User } from "../user/user.model";
 import httpStatus from "http-status-codes";
 import bcrypt from "bcryptjs";
-import { envVars } from "../../config/env";
-import { generateToken } from "../../utils/jwt";
+import { createUserTokens } from "../../utils/userTokens";
 
 const credentialLogin = async (payload: Partial<IUser>) => {
 
@@ -22,23 +21,17 @@ const credentialLogin = async (payload: Partial<IUser>) => {
         throw new AppError(httpStatus.UNAUTHORIZED, "Invalid password");
     }
 
-    const jwtPayload = {
-        userId: isUserExist._id,
-        role: isUserExist.role,
-        email: isUserExist.email
-    }
-    // const accessToken = jwt.sign(jwtPayload, envVars.JWT_SECRET, {
-    //     expiresIn: envVars.JWT_EXPIRATION
-    // } as SignOptions)
-    const accessToken = generateToken(jwtPayload, envVars.JWT_SECRET, envVars.JWT_EXPIRATION)
-
+    const userTokens = createUserTokens(isUserExist);
 
     return {
-        _id: isUserExist._id,
-        email: isUserExist.email,
-        name: isUserExist.name,
-        role: isUserExist.role,
-        accessToken
+        user: {
+            _id: isUserExist._id,
+            email: isUserExist.email,
+            name: isUserExist.name,
+            role: isUserExist.role,
+        },
+        accessToken: userTokens.accessToken,
+        refreshToken: userTokens.refreshToken,
     }
 }
 
