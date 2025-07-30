@@ -45,18 +45,7 @@ const createUser = async (payload: Partial<IUser>) => {
     return userWithoutPassword;
 }
 
-const getAllUsers = async () => {
-    const users = await User.find({}).select("-password -__v");
 
-    const totalUsers = await User.countDocuments({});
-
-    return {
-        users,
-        meta: {
-            total: totalUsers
-        }
-    };
-}
 
 
 const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken: JwtPayload) => {
@@ -94,6 +83,5 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
 
 export const UserService = {
     createUser,
-    getAllUsers,
     updateUser
 };

@@ -1,4 +1,5 @@
 import z from "zod";
+import { USER_ROLES } from "./user.interface";
 
 export const createUserZodSchema = z.object({
     name: z
@@ -26,7 +27,7 @@ export const updateUserZodSchema = z.object({
         .min(6, "Password must be at least 6 characters long")
         .optional(),
     role: z
-        .enum(['user', 'agent', 'admin'])
+        .enum(USER_ROLES)
         .optional(),
     isActive: z
         .boolean()

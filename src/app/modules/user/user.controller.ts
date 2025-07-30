@@ -5,8 +5,6 @@ import { UserService } from "./user.service";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { JwtPayload } from "jsonwebtoken";
-import { verifyToken } from "../../utils/jwt";
-import { envVars } from "../../config/env";
 
 
 const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -17,17 +15,6 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
         success: true,
         message: "User created successfully",
         data: user
-    });
-});
-
-const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const result = await UserService.getAllUsers();
-
-    res.status(httpStatus.OK).json({
-        success: true,
-        message: "Users retrieved successfully",
-        data: result.users,
-        meta: result.meta
     });
 });
 
@@ -54,6 +41,5 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 
 export const UserController = {
     createUser,
-    getAllUsers,
     updateUser
 };
