@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { IUser } from "./user.interface";
+import { IUser, USER_ROLES } from "./user.interface";
 import bcrypt from "bcryptjs";
 import { envVars } from "../../config/env";
 
@@ -30,8 +30,12 @@ const userSchema = new Schema<IUser>({
     },
     role: {
         type: String,
-        enum: ['user', 'agent', 'admin'],
-        default: 'user'
+        enum: USER_ROLES,
+        default: USER_ROLES.USER
+    },
+    wallet: {
+        type: Schema.Types.ObjectId,
+        ref: 'Wallet'
     },
     isActive: {
         type: Boolean,

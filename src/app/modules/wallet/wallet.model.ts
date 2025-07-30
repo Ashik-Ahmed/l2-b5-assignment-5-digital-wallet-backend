@@ -11,7 +11,7 @@ const walletSchema = new Schema<IWallet>({
     balance: {
         type: Number,
         required: true,
-        default: 50, // Initial balance ৳50
+        default: 50, // Initial balance BDT-50
         min: [0, 'Balance cannot be negative']
     },
     isBlocked: {
@@ -20,12 +20,12 @@ const walletSchema = new Schema<IWallet>({
     },
     dailyLimit: {
         type: Number,
-        default: 10000, // ৳10,000 daily limit
+        default: 10000, // BDT-10,000 daily limit
         min: [0, 'Daily limit cannot be negative']
     },
     monthlyLimit: {
         type: Number,
-        default: 100000, // ৳100,000 monthly limit
+        default: 100000, // BDT-100,000 monthly limit
         min: [0, 'Monthly limit cannot be negative']
     },
     dailySpent: {

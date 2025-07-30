@@ -5,6 +5,7 @@ import AppError from "../../errorHelpers/AppError";
 import httpStatus from "http-status-codes";
 import bcrypt from "bcryptjs";
 import { envVars } from "../../config/env";
+import { Wallet } from "../wallet/wallet.model";
 
 const createUser = async (payload: Partial<IUser>) => {
 
@@ -20,6 +21,21 @@ const createUser = async (payload: Partial<IUser>) => {
         password,
         ...rest
     });
+
+    if (!user) {
+        throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, "User creation failed");
+    }
+
+    // Create wallet for the user
+    const wallet = await Wallet.create({ userId: user._id }); // Default initial balance
+    if (!wallet) {
+        throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, "Wallet creation failed");
+    }
+    user.wallet = wallet._id;
+    await user.save();
+    // console.log("User created successfully:", user); 
+    // console.log("Wallet created successfully:", wallet);
+
     return user;
 }
 
