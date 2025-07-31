@@ -38,6 +38,11 @@ export const defaultSystemConfigs = [
         description: 'Standard transaction fee rate'
     },
     {
+        key: 'SEND_MONEY_FEE',
+        value: 5,
+        description: 'Standard transaction fee rate'
+    },
+    {
         key: 'MIN_TRANSACTION_AMOUNT',
         value: 1,
         description: 'Minimum transaction amount in BDT'

@@ -49,9 +49,22 @@ const cashOutByUser = catchAsync(async (req: Request, res: Response, next: NextF
     });
 });
 
+const sendMoney = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { phone, amount } = req.body;
+
+    const result = await WalletService.sendMoney(req, phone, amount);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Send money successful",
+        data: result
+    });
+});
 
 export const WalletController = {
     getWalletBalance,
     addMoneyToWallet,
-    cashOutByUser
+    cashOutByUser,
+    sendMoney
 };

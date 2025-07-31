@@ -224,8 +224,125 @@ const cashOutByUser = async (req: Request, phone: string, amount: number) => {
     }
 }
 
+const sendMoney = async (req: Request, phone: string, amount: number) => {
+
+    if (amount <= 0) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Amount must be greater than 0");
+    }
+
+    const sendMoneyFeeConfig = defaultSystemConfigs.find((config) => config.key === "SEND_MONEY_FEE");
+
+    if (!sendMoneyFeeConfig) {
+        throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, "Send money fee config not found");
+    }
+
+    const fromUser = await User.findById(req.user.userId).select("wallet role isActive");
+    const toUser = await User.findOne({ phone: phone }).select("wallet role isActive");
+
+    if (!fromUser) {
+        throw new AppError(httpStatus.NOT_FOUND, "From user not found");
+    }
+
+    if (!toUser) {
+        throw new AppError(httpStatus.NOT_FOUND, "To user not found");
+    }
+
+    if (fromUser.role !== "user") {
+        throw new AppError(httpStatus.FORBIDDEN, "Only users can send money");
+    }
+
+    if (toUser.role !== "user") {
+        throw new AppError(httpStatus.FORBIDDEN, "Only users can receive money");
+    }
+
+    if (!fromUser.isActive) {
+        throw new AppError(httpStatus.FORBIDDEN, "From user is not active");
+    }
+
+    if (!toUser.isActive) {
+        throw new AppError(httpStatus.FORBIDDEN, "To user is not active");
+    }
+
+    const fromWallet = await Wallet.findById(fromUser.wallet);
+    const toWallet = await Wallet.findById(toUser.wallet);
+
+    if (!fromWallet) {
+        throw new AppError(httpStatus.NOT_FOUND, "From user wallet not found");
+    }
+    if (!toWallet) {
+        throw new AppError(httpStatus.NOT_FOUND, "To user wallet not found");
+    }
+    if (fromWallet.balance < (amount + sendMoneyFeeConfig.value)) {
+        throw new AppError(httpStatus.FORBIDDEN, "Insufficient balance");
+    }
+    if (fromWallet.isBlocked) {
+        throw new AppError(httpStatus.FORBIDDEN, "From user wallet is blocked");
+    }
+    if (toWallet.isBlocked) {
+        throw new AppError(httpStatus.FORBIDDEN, "To user wallet is blocked");
+    }
+
+    const transactionPayload = {
+        type: TRANSACTION_TYPES.SEND_MONEY,
+        amount: amount,
+        fee: sendMoneyFeeConfig.value,
+        fromWallet: fromWallet._id,
+        toWallet: toWallet._id,
+        initiatedBy: req.user.userId,
+        initiatorRole: req.user.role,
+        status: TRANSACTION_STATUS.COMPLETED
+    };
+
+    const sendMoneyFeeTransactionPayload = {
+        type: TRANSACTION_TYPES.SEND_MONEY,
+        amount: sendMoneyFeeConfig.value,
+        fromWallet: fromWallet._id,
+        toWallet: toWallet._id,
+        initiatedBy: req.user.userId,
+        initiatorRole: req.user.role,
+        status: TRANSACTION_STATUS.COMPLETED
+    };
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        // All operations must use { session }
+        const transaction = await Transaction.create([transactionPayload], { session });
+        const sendMoneyFeeTransaction = await Transaction.create([sendMoneyFeeTransactionPayload], { session });
+
+        fromWallet.balance -= (amount + transactionPayload.fee);
+        fromWallet.dailySpent += amount;
+        fromWallet.transactions.push(transaction[0]._id);
+        fromWallet.transactions.push(sendMoneyFeeTransaction[0]._id);
+
+        toWallet.balance += amount;
+        toWallet.transactions.push(transaction[0]._id);
+
+        await fromWallet.save({ session });
+        await toWallet.save({ session });
+
+        await session.commitTransaction();
+
+        return {
+            transaction: transaction[0],
+            sendMoneyFeeTransaction: sendMoneyFeeTransaction[0],
+            fromWallet,
+            toWallet
+        };
+    } catch (error: any) {
+        await session.abortTransaction();
+        // console.log(error);
+        throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, (error.message || "Something went wrong"));
+    } finally {
+        session.endSession();
+    }
+
+}
+
 export const WalletService = {
     getWalletBalance,
     addMoneyToWallet,
-    cashOutByUser
+    cashOutByUser,
+    sendMoney
 }
