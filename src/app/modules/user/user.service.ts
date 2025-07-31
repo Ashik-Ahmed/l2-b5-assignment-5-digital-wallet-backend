@@ -29,8 +29,9 @@ const createUser = async (payload: Partial<IUser>) => {
     // Automatically create wallet for user or agent
     if (user.role === "user" || user.role === "agent") {
         const wallet = await Wallet.create({ userId: user._id });
-        if (!wallet) {
-            throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, "Wallet creation failed");
+        if (!wallet?._id) {
+            await User.findByIdAndDelete(user._id);
+            throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, "Wallet creation failed! User deleted. Please try again.");
         }
         user.wallet = wallet._id;
         await user.save();

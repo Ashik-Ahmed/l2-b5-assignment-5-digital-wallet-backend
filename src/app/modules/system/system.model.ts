@@ -33,7 +33,7 @@ export const SystemConfig = model<ISystemConfig>('SystemConfig', systemConfigSch
 // Default system configurations
 export const defaultSystemConfigs = [
     {
-        key: 'TRANSACTION_FEE_RATE',
+        key: 'CASHOUT_FEE_RATE',
         value: 0.005, // 0.5% transaction fee
         description: 'Standard transaction fee rate'
     },

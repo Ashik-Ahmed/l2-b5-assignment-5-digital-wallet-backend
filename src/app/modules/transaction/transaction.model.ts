@@ -1,5 +1,6 @@
 import { model, Schema } from "mongoose";
 import { ITransaction, TRANSACTION_STATUS, TRANSACTION_TYPES } from "./transaction.interface";
+import { USER_ROLES } from "../user/user.interface";
 
 const transactionSchema = new Schema<ITransaction>({
     transactionId: {
@@ -22,17 +23,16 @@ const transactionSchema = new Schema<ITransaction>({
     },
     fee: {
         type: Number,
-        default: 0,
+        // default: defaultSystemConfigs.find(config => config.key === 'TRANSACTION_FEE_RATE')?.value,
         min: [0, 'Fee cannot be negative']
     },
     commission: {
         type: Number,
-        default: 0,
+        // default: defaultSystemConfigs.find(config => config.key === 'AGENT_COMMISSION_RATE')?.value,
         min: [0, 'Commission cannot be negative']
     },
     netAmount: {
         type: Number,
-        required: true
     },
     fromWallet: {
         type: Schema.Types.ObjectId,
@@ -58,7 +58,7 @@ const transactionSchema = new Schema<ITransaction>({
     initiatorRole: {
         type: String,
         required: true,
-        enum: ['user', 'agent', 'admin']
+        enum: USER_ROLES
     },
     status: {
         type: String,
@@ -67,7 +67,6 @@ const transactionSchema = new Schema<ITransaction>({
     },
     description: {
         type: String,
-        required: [true, 'Description is required'],
         maxlength: [500, 'Description cannot exceed 500 characters']
     },
     metadata: {
@@ -83,10 +82,10 @@ const transactionSchema = new Schema<ITransaction>({
 });
 
 // Pre-save middleware to calculate net amount
-transactionSchema.pre('save', function (next) {
-    this.netAmount = this.amount - this.fee;
-    next();
-});
+// transactionSchema.pre('save', function (next) {
+//     this.netAmount = this.amount - this.fee;
+//     next();
+// });
 
 // Indexes for better query performance
 // transactionSchema.index({ transactionId: 1 });

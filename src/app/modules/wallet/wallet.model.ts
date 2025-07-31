@@ -45,7 +45,11 @@ const walletSchema = new Schema<IWallet>({
     lastMonthlyReset: {
         type: Date,
         default: Date.now
-    }
+    },
+    transactions: [{
+        type: String,
+        ref: 'Transaction'
+    }]
 }, {
     timestamps: true
 });

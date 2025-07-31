@@ -12,6 +12,7 @@ export interface IWallet extends Document {
     monthlySpent: number;
     lastDailyReset: Date;
     lastMonthlyReset: Date;
+    transactions: string[];
     createdAt: Date;
     updatedAt: Date;
 }

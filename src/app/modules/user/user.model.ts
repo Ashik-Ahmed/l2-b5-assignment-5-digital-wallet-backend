@@ -72,13 +72,13 @@ userSchema.pre('save', async function (next) {
         if (typeof this.isApproved === 'undefined') {
             this.isApproved = false;
         }
-        if (typeof this.commissionRate === 'undefined') {
-            this.commissionRate = 0.01;
-        }
+        // if (typeof this.commissionRate === 'undefined') {
+        //     this.commissionRate = 0.01;
+        // }
     } else {
         // Remove the fields for non-agents
         this.set('isApproved', undefined, { strict: false });
-        this.set('commissionRate', undefined, { strict: false });
+        // this.set('commissionRate', undefined, { strict: false });
     }
 
     next();

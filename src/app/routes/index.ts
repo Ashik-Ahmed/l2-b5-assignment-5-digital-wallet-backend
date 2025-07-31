@@ -3,6 +3,7 @@ import { userRoutes } from "../modules/user/user.route";
 import { AuthRoutes } from "../modules/auth/auth.route";
 import { adminRoutes } from "../modules/admin/admin.route";
 import { WalletRoute } from "../modules/wallet/wallet.route";
+import { AgentRoute } from "../modules/agent/agent.route";
 
 export const router = Router();
 
@@ -18,6 +19,10 @@ const moduleRoutes = [
     {
         path: "/admin",
         route: adminRoutes
+    },
+    {
+        path: "/agents",
+        route: AgentRoute
     },
     {
         path: "/wallets",

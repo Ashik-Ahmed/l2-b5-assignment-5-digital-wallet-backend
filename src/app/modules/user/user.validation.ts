@@ -14,6 +14,20 @@ export const createUserZodSchema = z.object({
     password: z
         .string()
         .min(6, "Password must be at least 6 characters long"),
+    role: z
+        .enum(USER_ROLES)
+        .optional(),
+    isActive: z
+        .boolean()
+        .optional(),
+    isApproved: z
+        .boolean()
+        .optional(),
+    commissionRate: z
+        .number()
+        .min(0, "Commission rate cannot be negative")
+        .max(0.1, "Commission rate cannot exceed 10%")
+        .optional()
 });
 
 export const updateUserZodSchema = z.object({
