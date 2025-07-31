@@ -36,8 +36,21 @@ const walletBlockUnblock = async (walletId: string, blockStatus: boolean) => {
 
 }
 
+
+const getAllAgents = async () => {
+    const agents = await User.find({ role: "agent" }).select("-password -__v");
+    const totalAgents = await User.countDocuments({ role: "agent" });
+    return {
+        agents,
+        meta: {
+            total: totalAgents
+        }
+    };
+}
+
 export const AdminService = {
     getAllUsers,
     getAllWallets,
-    walletBlockUnblock
+    walletBlockUnblock,
+    getAllAgents
 }
