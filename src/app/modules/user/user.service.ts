@@ -66,7 +66,7 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
         //     throw new AppError(httpStatus.FORBIDDEN, "You are not authorized");
         // }
     }
-    console.log("Decoded Token:", decodedToken.role);
+
     if ('isActive' in payload || 'isApproved' in payload || 'commissionRate' in payload) {
         if (decodedToken.role !== "admin") {
             throw new AppError(httpStatus.FORBIDDEN, "You are not authorized");

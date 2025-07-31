@@ -51,10 +51,24 @@ const getAllAgents = catchAsync(async (req: Request, res: Response, next: NextFu
     });
 });
 
+const agentApproval = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req.params;
+    const { isApproved } = req.body;
+
+    const result = await AdminService.agentApproval(userId, isApproved);
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: `Agent ${isApproved ? 'approved' : 'un-approved'} successfully`,
+        data: result
+    });
+});
+
 
 export const AdminController = {
     getAllUsers,
     getAllWallets,
     walletBlockUnblock,
-    getAllAgents
+    getAllAgents,
+    agentApproval
 }
