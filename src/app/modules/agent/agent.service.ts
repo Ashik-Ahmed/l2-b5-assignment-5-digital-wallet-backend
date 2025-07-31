@@ -191,6 +191,10 @@ const cashOut = async (req: Request, phone: string, amount: number) => {
         throw new AppError(httpStatus.FORBIDDEN, "User wallet is blocked");
     }
 
+    if (agentWallet.isBlocked) {
+        throw new AppError(httpStatus.FORBIDDEN, "Agent wallet is blocked");
+    }
+
     if (userWallet.balance < (amount + (amount * cashOutFeeConfig.value))) {
         throw new AppError(httpStatus.FORBIDDEN, "Insufficient balance");
     }
