@@ -3,11 +3,22 @@ import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { AdminService } from "./admin.service";
 import httpStatus from "http-status-codes";
+import { sendResponse } from "../../utils/sendResponse";
 
 const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const result = await AdminService.getAllUsers();
 
-    res.status(httpStatus.OK).json({
+    if (result.users.length === 0) {
+        return sendResponse(res, {
+            statusCode: httpStatus.OK,
+            success: true,
+            message: "No users found",
+            data: []
+        })
+    }
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
         success: true,
         message: "Users retrieved successfully",
         data: result.users,
@@ -18,7 +29,9 @@ const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFun
 const getAllWallets = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const result = await AdminService.getAllWallets();
 
-    res.status(httpStatus.OK).json({
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
         success: true,
         message: "Wallets retrieved successfully",
         data: result.wallets,
@@ -32,7 +45,8 @@ const walletBlockUnblock = catchAsync(async (req: Request, res: Response, next: 
 
     const result = await AdminService.walletBlockUnblock(walletId, isBlocked);
 
-    res.status(httpStatus.OK).json({
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
         success: true,
         message: `Wallet ${isBlocked ? 'blocked' : 'unblocked'} successfully`,
         data: result
@@ -43,7 +57,8 @@ const walletBlockUnblock = catchAsync(async (req: Request, res: Response, next: 
 const getAllAgents = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const result = await AdminService.getAllAgents();
 
-    res.status(httpStatus.OK).json({
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
         success: true,
         message: "Agents retrieved successfully",
         data: result.agents,
@@ -57,7 +72,9 @@ const agentApproval = catchAsync(async (req: Request, res: Response, next: NextF
 
     const result = await AdminService.agentApproval(userId, isApproved);
 
-    res.status(httpStatus.OK).json({
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
         success: true,
         message: `Agent ${isApproved ? 'approved' : 'un-approved'} successfully`,
         data: result
@@ -65,10 +82,23 @@ const agentApproval = catchAsync(async (req: Request, res: Response, next: NextF
 });
 
 
+const getAllTransactions = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const result = await AdminService.getAllTransactions();
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Transactions retrieved successfully",
+        data: result.transactions,
+        meta: result.meta
+    });
+});
+
 export const AdminController = {
     getAllUsers,
     getAllWallets,
     walletBlockUnblock,
     getAllAgents,
-    agentApproval
+    agentApproval,
+    getAllTransactions
 }

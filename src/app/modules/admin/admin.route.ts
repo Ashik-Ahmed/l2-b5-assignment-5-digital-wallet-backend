@@ -11,5 +11,7 @@ router.get("/wallets", checkAuth(USER_ROLES.ADMIN), AdminController.getAllWallet
 router.patch("/wallets/:walletId/block", checkAuth(USER_ROLES.ADMIN), AdminController.walletBlockUnblock);
 router.get("/agents", checkAuth(USER_ROLES.ADMIN), AdminController.getAllAgents);
 router.patch("/agents/:userId/approve", checkAuth(USER_ROLES.ADMIN), AdminController.agentApproval);
+router.get("/transactions", checkAuth(USER_ROLES.ADMIN), AdminController.getAllTransactions);
+
 
 export const adminRoutes = router;

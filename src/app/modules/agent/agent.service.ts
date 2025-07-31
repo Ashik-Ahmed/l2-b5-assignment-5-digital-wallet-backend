@@ -222,7 +222,7 @@ const cashOut = async (req: Request, phone: string, amount: number) => {
     const cashOutFeePayload = {
         type: TRANSACTION_TYPES.TRANSACTION_FEE,
         amount: amount * cashOutFeeConfig.value,
-        toWallet: agentWallet._id,
+        fromWallet: userWallet._id,
         initiatedBy: user._id,
         initiatorRole: user.role,
         status: TRANSACTION_STATUS.COMPLETED

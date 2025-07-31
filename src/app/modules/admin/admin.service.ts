@@ -1,4 +1,5 @@
 import AppError from "../../errorHelpers/AppError";
+import { Transaction } from "../transaction/transaction.model";
 import { User } from "../user/user.model";
 import { Wallet } from "../wallet/wallet.model";
 import httpStatus from "http-status-codes";
@@ -64,10 +65,142 @@ const agentApproval = async (userId: string, approvalStatus: boolean) => {
     return result;
 }
 
+const getAllTransactions = async () => {
+    // const transactions = await Transaction.find({})
+    //     .populate({
+    //         path: "fromWallet",
+    //         select: "userId -_id",
+    //         populate: {
+    //             path: "userId",
+    //             select: "name email phone -_id"
+    //         }
+    //     })
+    //     .populate({
+    //         path: "toWallet",
+    //         select: "userId -_id",
+    //         populate: {
+    //             path: "userId",
+    //             select: "name email phone -_id"
+    //         }
+    //     })
+    //     .populate({
+    //         path: "initiatedBy",
+    //         select: "name email phone -_id"
+    //     });
+
+    const transactions = await Transaction.aggregate([
+        // Lookup fromWallet
+        {
+            $lookup: {
+                from: "wallets",
+                localField: "fromWallet",
+                foreignField: "_id",
+                as: "fromWalletData"
+            }
+        },
+
+        // Lookup toWallet
+        {
+            $lookup: {
+                from: "wallets",
+                localField: "toWallet",
+                foreignField: "_id",
+                as: "toWalletData"
+            }
+        },
+
+        // Lookup user data for fromWallet
+        {
+            $lookup: {
+                from: "users",
+                localField: "fromWalletData.userId",
+                foreignField: "_id",
+                as: "fromUserData"
+            }
+        },
+
+        // Lookup user data for toWallet
+        {
+            $lookup: {
+                from: "users",
+                localField: "toWalletData.userId",
+                foreignField: "_id",
+                as: "toUserData"
+            }
+        },
+
+        // Lookup initiator data
+        {
+            $lookup: {
+                from: "users",
+                localField: "initiatedBy",
+                foreignField: "_id",
+                as: "initiatorData"
+            }
+        },
+
+        // Project the final structure
+        {
+            $project: {
+                _id: 1,
+                type: 1,
+                amount: 1,
+                commission: 1,
+                status: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                initiatorRole: 1,
+
+                fromWallet: {
+                    $cond: {
+                        if: { $gt: [{ $size: "$fromUserData" }, 0] },
+                        then: {
+                            name: { $arrayElemAt: ["$fromUserData.name", 0] },
+                            phone: { $arrayElemAt: ["$fromUserData.phone", 0] }
+                        },
+                        else: null
+                    }
+                },
+
+                toWallet: {
+                    $cond: {
+                        if: { $gt: [{ $size: "$toUserData" }, 0] },
+                        then: {
+                            name: { $arrayElemAt: ["$toUserData.name", 0] },
+                            phone: { $arrayElemAt: ["$toUserData.phone", 0] }
+                        },
+                        else: null
+                    }
+                },
+
+                initiatedBy: {
+                    $cond: {
+                        if: { $gt: [{ $size: "$initiatorData" }, 0] },
+                        then: {
+                            name: { $arrayElemAt: ["$initiatorData.name", 0] },
+                            phone: { $arrayElemAt: ["$initiatorData.phone", 0] }
+                        },
+                        else: null
+                    }
+                }
+            }
+        }
+    ]);
+
+    const totalTransactions = await Transaction.countDocuments({});
+    return {
+        transactions,
+        meta: {
+            total: totalTransactions
+        }
+    };
+}
+
 export const AdminService = {
     getAllUsers,
     getAllWallets,
     walletBlockUnblock,
     getAllAgents,
-    agentApproval
+    agentApproval,
+    getAllTransactions
 }
