@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request } from "express";
 import AppError from "../../errorHelpers/AppError";
 import { User } from "../user/user.model";
@@ -47,7 +48,7 @@ const cashIn = async (req: Request, userPhone: string, amount: number) => {
     }
 
     const userWallet = await Wallet.findById(user.wallet);
-    const agentWallet = await Wallet.findOne({ userId: agent._id });
+    const agentWallet = await Wallet.findById(agent.wallet);
 
     if (!userWallet || !agentWallet) {
         throw new AppError(httpStatus.NOT_FOUND, "Wallet not found");
@@ -121,7 +122,7 @@ const cashIn = async (req: Request, userPhone: string, amount: number) => {
     } catch (error) {
         await session.abortTransaction();
         session.endSession();
-        throw error;
+        throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, "Cash-in failed");
     } finally {
         session.endSession();
     }
@@ -153,7 +154,7 @@ const cashOut = async (req: Request, phone: string, amount: number) => {
     }
 
     const user = await User.findOne({ phone: phone }).select("wallet role isActive");
-    const agent = await User.findById(req.user.userId).select("-transactions -password -_v");
+    const agent = await User.findById(req.user.userId).select(" -password -_v");
 
     if (!user) {
         throw new AppError(httpStatus.NOT_FOUND, "User not found");
@@ -175,8 +176,8 @@ const cashOut = async (req: Request, phone: string, amount: number) => {
         throw new AppError(httpStatus.FORBIDDEN, "Agent is not approved");
     }
 
-    const userWallet = await Wallet.findById(user.wallet).select("-transactions -__v");
-    const agentWallet = await Wallet.findById(agent.wallet).select("-transactions -__v");
+    const userWallet = await Wallet.findById(user.wallet);
+    const agentWallet = await Wallet.findById(agent.wallet);
 
     if (!agentWallet) {
         throw new AppError(httpStatus.NOT_FOUND, "Agent wallet not found");
@@ -184,6 +185,10 @@ const cashOut = async (req: Request, phone: string, amount: number) => {
 
     if (!userWallet) {
         throw new AppError(httpStatus.NOT_FOUND, "User wallet not found");
+    }
+
+    if (userWallet.balance < (amount + (amount * cashOutFeeConfig.value))) {
+        throw new AppError(httpStatus.FORBIDDEN, "Insufficient balance");
     }
 
     if (userWallet.dailyLimit < (amount + userWallet.dailySpent)) {
@@ -198,14 +203,14 @@ const cashOut = async (req: Request, phone: string, amount: number) => {
         type: TRANSACTION_TYPES.CASH_OUT,
         amount: amount,
         commission: amount * agentCommissionConfig.value,
-        fromWallet: agentWallet._id,
-        toWallet: userWallet._id,
+        fromWallet: userWallet._id,
+        toWallet: agentWallet._id,
         initiatedBy: req.user.userId,
         initiatorRole: req.user.role,
         status: TRANSACTION_STATUS.COMPLETED
     };
 
-    const commissioinPayload = {
+    const commissionPayload = {
         type: TRANSACTION_TYPES.COMMISSION,
         amount: transactionPayload.commission,
         toWallet: agentWallet._id,
@@ -229,7 +234,7 @@ const cashOut = async (req: Request, phone: string, amount: number) => {
     try {
         // All operations must use { session }
         const transaction = await Transaction.create([transactionPayload], { session });
-        const commissionTransaction = await Transaction.create([commissioinPayload], { session });
+        const commissionTransaction = await Transaction.create([commissionPayload], { session });
         const cashOutFeeTransaction = await Transaction.create([cashOutFeePayload], { session });
 
         agentWallet.balance += amount;
@@ -237,7 +242,7 @@ const cashOut = async (req: Request, phone: string, amount: number) => {
         agentWallet.transactions.push(transaction[0]._id);
         agentWallet.transactions.push(commissionTransaction[0]._id);
 
-        userWallet.balance -= amount;
+        userWallet.balance -= (amount + (cashOutFeeConfig.value * amount));
         userWallet.dailySpent += amount;
         userWallet.transactions.push(transaction[0]._id);
         userWallet.transactions.push(cashOutFeeTransaction[0]._id);
@@ -246,22 +251,21 @@ const cashOut = async (req: Request, phone: string, amount: number) => {
         await agentWallet.save({ session });
 
         await session.commitTransaction();
-        session.endSession();
 
         return {
             transaction: transaction[0],
+            commissionTransaction: commissionTransaction[0],
+            cashOutFeeTransaction: cashOutFeeTransaction[0],
             userWallet,
             agentWallet
         };
     } catch (error) {
         await session.abortTransaction();
-        session.endSession();
-        throw error;
+        // console.log(error);
+        throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, "Transaction failed");
     } finally {
         session.endSession();
     }
-
-
 }
 
 export const AgentService = {

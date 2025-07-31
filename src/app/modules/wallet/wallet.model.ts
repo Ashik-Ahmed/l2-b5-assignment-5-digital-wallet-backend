@@ -12,7 +12,8 @@ const walletSchema = new Schema<IWallet>({
         type: Number,
         required: true,
         default: 50, // Initial balance BDT-50
-        min: [0, 'Balance cannot be negative']
+        min: [0, 'Balance cannot be negative'],
+        set: (value: number) => Math.round(value * 100) / 100 // Rounds to 2 decimal places
     },
     isBlocked: {
         type: Boolean,
