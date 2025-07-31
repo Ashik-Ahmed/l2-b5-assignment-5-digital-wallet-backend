@@ -176,7 +176,7 @@ const cashOutByUser = async (req: Request, phone: string, amount: number) => {
     }
 
     const cashOutFeePayload = {
-        type: TRANSACTION_TYPES.TRANSACTION_FEE,
+        type: TRANSACTION_TYPES.CASH_OUT_FEE,
         amount: amount * cashOutFeeConfig.value,
         fromWallet: userWallet._id,
         initiatedBy: user._id,
@@ -294,7 +294,7 @@ const sendMoney = async (req: Request, phone: string, amount: number) => {
     };
 
     const sendMoneyFeeTransactionPayload = {
-        type: TRANSACTION_TYPES.SEND_MONEY,
+        type: TRANSACTION_TYPES.SEND_MONEY_FEE,
         amount: sendMoneyFeeConfig.value,
         fromWallet: fromWallet._id,
         toWallet: toWallet._id,
