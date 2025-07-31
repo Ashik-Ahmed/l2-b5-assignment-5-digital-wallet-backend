@@ -5,6 +5,7 @@ import { USER_ROLES } from "../user/user.interface";
 
 const router = Router();
 
+router.post("/add-money", checkAuth(USER_ROLES.USER), WalletController.addMoneyToWallet);
 router.get("/:walletId/balance", checkAuth(USER_ROLES.ADMIN), WalletController.getWalletBalance);
 
 export const WalletRoute = router;

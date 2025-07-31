@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { WalletService } from "./wallet.service";
 import httpStatus from "http-status-codes";
+import { sendResponse } from "../../utils/sendResponse";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getWalletBalance = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -9,13 +11,33 @@ const getWalletBalance = catchAsync(async (req: Request, res: Response, next: Ne
 
     const result = await WalletService.getWalletBalance(walletId);
 
-    res.status(httpStatus.OK).json({
+    // res.status(httpStatus.OK).json({
+    //     success: true,
+    //     message: "Wallet balance retrieved successfully",
+    //     data: result
+    // });
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
         success: true,
         message: "Wallet balance retrieved successfully",
         data: result
-    });
+    })
 });
 
+const addMoneyToWallet = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const addMoney = await WalletService.addMoneyToWallet(req, req.body.amount);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Add money successful",
+        data: addMoney
+    })
+})
+
+
 export const WalletController = {
-    getWalletBalance
+    getWalletBalance,
+    addMoneyToWallet
 };

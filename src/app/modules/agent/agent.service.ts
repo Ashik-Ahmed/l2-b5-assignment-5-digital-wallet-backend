@@ -66,9 +66,9 @@ const cashIn = async (req: Request, userPhone: string, amount: number) => {
         throw new AppError(httpStatus.FORBIDDEN, "Insufficient balance");
     }
 
-    if ((amount + userWallet.dailySpent) > userWallet.dailyLimit) {
-        throw new AppError(httpStatus.FORBIDDEN, "Daily limit exceeded");
-    }
+    // if ((amount + userWallet.dailySpent) > userWallet.dailyLimit) {
+    //     throw new AppError(httpStatus.FORBIDDEN, "Daily limit exceeded");
+    // }
 
 
     const transactionPayload = {
@@ -104,7 +104,7 @@ const cashIn = async (req: Request, userPhone: string, amount: number) => {
         agentWallet.transactions.push(commissionTransaction[0]._id);
 
         userWallet.balance += amount;
-        userWallet.dailySpent += amount;
+        // userWallet.dailySpent += amount;
         userWallet.transactions.push(transaction[0]._id);
 
         await userWallet.save({ session });
@@ -185,6 +185,10 @@ const cashOut = async (req: Request, phone: string, amount: number) => {
 
     if (!userWallet) {
         throw new AppError(httpStatus.NOT_FOUND, "User wallet not found");
+    }
+
+    if (userWallet.isBlocked) {
+        throw new AppError(httpStatus.FORBIDDEN, "User wallet is blocked");
     }
 
     if (userWallet.balance < (amount + (amount * cashOutFeeConfig.value))) {

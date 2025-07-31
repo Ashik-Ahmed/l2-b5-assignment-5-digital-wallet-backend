@@ -21,12 +21,12 @@ const walletSchema = new Schema<IWallet>({
     },
     dailyLimit: {
         type: Number,
-        default: 10000, // BDT-10,000 daily limit
+        default: 10000,
         min: [0, 'Daily limit cannot be negative']
     },
     monthlyLimit: {
         type: Number,
-        default: 100000, // BDT-100,000 monthly limit
+        default: 100000,
         min: [0, 'Monthly limit cannot be negative']
     },
     dailySpent: {
