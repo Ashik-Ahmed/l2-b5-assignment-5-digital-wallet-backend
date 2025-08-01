@@ -4,11 +4,11 @@ import { Transaction } from "./transaction.model";
 
 const getAllTransactions = async (req: Request) => {
 
-    const transactions = await Wallet.find({ userId: req.user.userId }).select("transactions -_id").populate("transactions").sort({ createdAt: -1 });
+    const result = await Wallet.find({ userId: req.user.userId }).select("transactions -_id").populate("transactions").sort({ createdAt: -1 });
     const totalTransactions = await Wallet.find({ userId: req.user.userId }).countDocuments({});
 
     return {
-        transactions,
+        transactions: result[0].transactions,
         meta: {
             total: totalTransactions
         }
