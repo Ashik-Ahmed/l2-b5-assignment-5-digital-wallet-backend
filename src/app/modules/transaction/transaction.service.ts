@@ -8,12 +8,25 @@ import mongoose from "mongoose";
 const getAllTransactions = async (req: Request) => {
 
     const result = await Wallet.find({ userId: req.user.userId }).select("transactions -_id").populate("transactions").sort({ createdAt: -1 });
-    const totalTransactions = await Wallet.find({ userId: req.user.userId }).countDocuments({});
+
+    // const result = await Wallet.aggregate([
+    //     {
+    //         $match: {
+    //             userId: new mongoose.Types.ObjectId(req.user.userId)
+    //         }
+    //     },
+    //     {
+    //         $unwind: "$transactions"
+    //     }
+    // ]);
+
+
+    const totalTransactions = await Wallet.find({ userId: req.user.userId }).select("transactions -_id");
 
     return {
         transactions: result[0].transactions,
         meta: {
-            total: totalTransactions
+            total: totalTransactions[0].transactions.length
         }
     };
 }

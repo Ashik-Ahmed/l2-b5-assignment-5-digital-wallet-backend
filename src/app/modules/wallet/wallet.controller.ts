@@ -7,15 +7,8 @@ import { sendResponse } from "../../utils/sendResponse";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getWalletBalance = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { walletId } = req.params;
 
-    const result = await WalletService.getWalletBalance(walletId);
-
-    // res.status(httpStatus.OK).json({
-    //     success: true,
-    //     message: "Wallet balance retrieved successfully",
-    //     data: result
-    // });
+    const result = await WalletService.getWalletBalance(req);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,

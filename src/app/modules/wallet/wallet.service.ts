@@ -10,8 +10,8 @@ import { User } from "../user/user.model";
 import { USER_ROLES } from "../user/user.interface";
 import { defaultSystemConfigs } from "../system/system.model";
 
-const getWalletBalance = async (walletId: string) => {
-    const wallet = await Wallet.findById(walletId).select("balance isBlocked dailyLimit monthlyLimit dailySpent monthlySpent -_id");
+const getWalletBalance = async (req: Request) => {
+    const wallet = await Wallet.findOne({ userId: req.user.userId }).select("balance isBlocked dailyLimit monthlyLimit dailySpent monthlySpent -_id");
 
     if (!wallet) {
         throw new AppError(httpStatus.NOT_FOUND, "Wallet not found");
