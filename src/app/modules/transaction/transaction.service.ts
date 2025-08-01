@@ -1,5 +1,6 @@
 import { Request } from "express";
 import { Wallet } from "../wallet/wallet.model";
+import { Transaction } from "./transaction.model";
 
 const getAllTransactions = async (req: Request) => {
 
@@ -14,6 +15,14 @@ const getAllTransactions = async (req: Request) => {
     };
 }
 
+const getTransactionById = async (id: string) => {
+
+    const transaction = await Transaction.findById(id).populate("fromWallet").populate("toWallet").populate("fromUser").populate("toUser").populate("initiatedBy");
+
+    return transaction;
+}
+
 export const TransactionService = {
-    getAllTransactions
+    getAllTransactions,
+    getTransactionById
 }

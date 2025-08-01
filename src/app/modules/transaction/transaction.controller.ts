@@ -6,7 +6,7 @@ import httpStatus from "http-status-codes";
 import { sendResponse } from "../../utils/sendResponse";
 
 const getAllTransactions = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    console.log(req);
+
     const result = await TransactionService.getAllTransactions(req);
 
     sendResponse(res, {
@@ -18,6 +18,21 @@ const getAllTransactions = catchAsync(async (req: Request, res: Response, next: 
     });
 });
 
+const getTransactionById = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+
+    const result = await TransactionService.getTransactionById(id);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Transaction retrieved successfully",
+        data: result
+    });
+});
+
+
 export const TransactionController = {
-    getAllTransactions
+    getAllTransactions,
+    getTransactionById
 }
