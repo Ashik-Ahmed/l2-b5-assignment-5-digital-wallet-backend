@@ -21,7 +21,7 @@ const getAllTransactions = catchAsync(async (req: Request, res: Response, next: 
 const getTransactionById = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
-    const result = await TransactionService.getTransactionById(id);
+    const result = await TransactionService.getTransactionById(req, id);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,

@@ -276,6 +276,21 @@ const cashOut = async (req: Request, phone: string, amount: number) => {
     }
 }
 
+const getCommissionHistoryByAgent = async (req: Request) => {
+    const agent = await User.findById(req.user.userId).select("wallet role isActive");
+
+    if (!agent) {
+        throw new AppError(httpStatus.NOT_FOUND, "Agent not found");
+    }
+
+    if (agent.role !== "agent") {
+        throw new AppError(httpStatus.FORBIDDEN, "You are not an agent");
+    }
+
+    const agentWallet = await Wallet.findById(agent.wallet);
+
+}
+
 export const AgentService = {
     cashIn,
     cashOut
