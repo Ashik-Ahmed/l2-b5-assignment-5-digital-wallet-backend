@@ -19,8 +19,12 @@ This is the backend for a Digital Wallet system, developed with Node.js, Express
 - POST   /register     - Register new user/agent
 - POST   /login        - Login user/agent/admin
 - POST   /logout       - Logout user
-- GET    /me          - Get current user profile
-- PUT    /change-password - Change password
+- POST   /refresh-token - Generate new access token with refresh token
+
+
+👤 User Routes (/api/v1/user) [Auth Required]
+- GET    /me          - Get logged in user profile
+- PATCH  /:id         - Update user profile
 
 
 💰 Wallet Routes (/api/v1/wallets) [Auth Required - User/Agent]
@@ -38,7 +42,6 @@ This is the backend for a Digital Wallet system, developed with Node.js, Express
 🏪 Agent Routes (/api/v1/agent) [Auth Required - Agent Only]
 - POST   /cash-in     - Agent cash-in to user wallet
 - POST   /cash-out    - Agent cash-out from user wallet
-- GET    /commission-history - Get commission history
 
 
 👑 Admin Routes (/api/v1/admin) [Auth Required - Admin Only]
