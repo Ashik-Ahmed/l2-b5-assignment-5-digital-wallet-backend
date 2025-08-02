@@ -53,6 +53,8 @@ This is the backend for a Digital Wallet system, developed with Node.js, Express
 - PATCH  /agents/:id/approve - Approve/suspend agent
 - GET    /transactions - Get all transactions
 
+Visit the following link for details API Documentation: [https://documenter.getpostman.com/view/24318297/2sB3BAMXsu](https://documenter.getpostman.com/view/24318297/2sB3BAMXsu)
+
 
 ## Getting Started
 

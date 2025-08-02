@@ -19,6 +19,15 @@ const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const auth_service_1 = require("./auth.service");
 const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 const setCookie_1 = require("../../utils/setCookie");
+const createUser = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield auth_service_1.AuthService.createUser(req.body);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.CREATED,
+        success: true,
+        message: "User created successfully",
+        data: user
+    });
+}));
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const credentialLogin = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const loginInfo = yield auth_service_1.AuthService.credentialLogin(req.body);
@@ -57,6 +66,7 @@ const getNewAccessToken = (0, catchAsync_1.catchAsync)((req, res, next) => __awa
     });
 }));
 exports.AuthController = {
+    createUser,
     credentialLogin,
     getNewAccessToken
 };

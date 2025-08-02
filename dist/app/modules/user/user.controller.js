@@ -19,12 +19,13 @@ const catchAsync_1 = require("../../utils/catchAsync");
 const sendResponse_1 = require("../../utils/sendResponse");
 const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 const user_interface_1 = require("./user.interface");
-const createUser = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_service_1.UserService.createUser(req.body);
+const getLoggedInUser = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user.userId;
+    const user = yield user_service_1.UserService.getLoggedInUser(userId);
     (0, sendResponse_1.sendResponse)(res, {
-        statusCode: http_status_codes_1.default.CREATED,
+        statusCode: http_status_codes_1.default.OK,
         success: true,
-        message: "User created successfully",
+        message: "User retrieved successfully",
         data: user
     });
 }));
@@ -53,6 +54,6 @@ const updateUser = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(vo
     });
 }));
 exports.UserController = {
-    createUser,
+    getLoggedInUser,
     updateUser
 };
