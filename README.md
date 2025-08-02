@@ -21,39 +21,39 @@ This is the backend for a Digital Wallet system, developed with Node.js, Express
 ==============================================
 
 🔐 Authentication Routes (/api/auth)
-POST   /register     - Register new user/agent
-POST   /login        - Login user/agent/admin
-POST   /logout       - Logout user
-GET    /me          - Get current user profile
-PUT    /change-password - Change password
+- POST   /register     - Register new user/agent
+- POST   /login        - Login user/agent/admin
+- POST   /logout       - Logout user
+- GET    /me          - Get current user profile
+- PUT    /change-password - Change password
 
 
 💰 Wallet Routes (/api/wallets) [Auth Required - User/Agent]
-GET    /balance     - Get wallet balance
-POST   /add-money   - Add money to wallet
-POST   /cash-out    - Cash out money from wallet
-POST   /send-money  - Send money to another user
+- GET    /balance     - Get wallet balance
+- POST   /add-money   - Add money to wallet
+- POST   /cash-out    - Cash out money from wallet
+- POST   /send-money  - Send money to another user
 
 
 🏪 Agent Routes (/api/agent) [Auth Required - Agent Only]
-POST   /cash-in     - Agent cash-in to user wallet
-POST   /cash-out    - Agent cash-out from user wallet
-GET    /commission-history - Get commission history
+- POST   /cash-in     - Agent cash-in to user wallet
+- POST   /cash-out    - Agent cash-out from user wallet
+- GET    /commission-history - Get commission history
 
 
 🔁 Transaction Routes (/api/transactions) [Auth Required]
-GET    /            - Get transaction history
-GET    /:transactionId - Get transaction details
+- GET    /            - Get transaction history
+- GET    /:transactionId - Get transaction details
 
 
 👑 Admin Routes (/api/admin) [Auth Required - Admin Only]
-GET    /users       - Get all users
-GET    /wallets     - Get all wallets
-PATCH  /wallets/:id/block - Block/unblock wallet
-GET    /wallets/:id - Get wallet details
-GET    /agents      - Get all agents
-PATCH  /agents/:id/approve - Approve/suspend agent
-GET    /transactions - Get all transactions
+- GET    /users       - Get all users
+- GET    /wallets     - Get all wallets
+- PATCH  /wallets/:id/block - Block/unblock wallet
+- GET    /wallets/:id - Get wallet details
+- GET    /agents      - Get all agents
+- PATCH  /agents/:id/approve - Approve/suspend agent
+- GET    /transactions - Get all transactions
 
 
 ## Getting Started
