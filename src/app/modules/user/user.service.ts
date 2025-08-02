@@ -6,7 +6,12 @@ import httpStatus from "http-status-codes";
 import bcrypt from "bcryptjs";
 import { envVars } from "../../config/env";
 
+const getLoggedInUser = async (userId: string) => {
 
+    const user = await User.findById(userId).select("-password -__v");
+
+    return user
+}
 
 const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken: JwtPayload) => {
 
@@ -42,5 +47,6 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
 }
 
 export const UserService = {
+    getLoggedInUser,
     updateUser
 };

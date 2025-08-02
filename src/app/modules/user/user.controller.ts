@@ -9,6 +9,20 @@ import AppError from "../../errorHelpers/AppError";
 import { USER_ROLES } from "./user.interface";
 
 
+const getLoggedInUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const userId = req.user.userId;
+
+    const user = await UserService.getLoggedInUser(userId);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "User retrieved successfully",
+        data: user
+    })
+})
+
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const userId = req.params.id;
@@ -43,5 +57,6 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 
 
 export const UserController = {
+    getLoggedInUser,
     updateUser
 };
