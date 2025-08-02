@@ -13,6 +13,17 @@ This is the backend for a Digital Wallet system, developed with Node.js, Express
 *   **Error Handling:** Centralized error handling for robust API responses.
 *   **Validation:** Request validation using Zod.
 
+## Tech Stack
+
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- TypeScript
+- JWT, BCrypt
+- Zod
+
+
 ## API Endpoints
 
 🔐 Authentication Routes (/api/v1/auth)
