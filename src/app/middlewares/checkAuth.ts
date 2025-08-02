@@ -8,7 +8,7 @@ export const checkAuth = (...authRoles: string[]) => async (req: Request, res: R
     try {
         const accessToken = req.cookies.accessToken;
         if (!accessToken) {
-            throw new AppError(403, "Access token is required");
+            throw new AppError(403, "Please login first");
         }
         // const verifiedToken = jwt.verify(accessToken, process.env.JWT_SECRET as string);
 
