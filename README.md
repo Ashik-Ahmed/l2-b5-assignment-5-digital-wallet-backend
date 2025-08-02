@@ -15,11 +15,6 @@ This is the backend for a Digital Wallet system, developed with Node.js, Express
 
 ## API Endpoints
 
-
-==============================================
-📋 ROUTE STRUCTURE SUMMARY
-==============================================
-
 🔐 Authentication Routes (/api/auth)
 - POST   /register     - Register new user/agent
 - POST   /login        - Login user/agent/admin
