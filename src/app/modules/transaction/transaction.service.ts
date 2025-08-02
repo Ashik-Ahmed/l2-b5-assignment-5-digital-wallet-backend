@@ -1,102 +1,53 @@
-import AppError from "../../errorHelpers/AppError";
-import { Transaction } from "../transaction/transaction.model";
-import { User } from "../user/user.model";
+import { Request } from "express";
 import { Wallet } from "../wallet/wallet.model";
+import { Transaction } from "./transaction.model";
+import AppError from "../../errorHelpers/AppError";
 import httpStatus from "http-status-codes";
+import mongoose from "mongoose";
 
-const getAllUsers = async () => {
-    const users = await User.find({}).select("-password -__v");
+const getAllTransactions = async (req: Request) => {
 
-    const totalUsers = await User.countDocuments({});
+    const result = await Wallet.find({ userId: req.user.userId }).select("transactions -_id").populate("transactions").sort({ createdAt: -1 });
+
+    // const result = await Wallet.aggregate([
+    //     {
+    //         $match: {
+    //             userId: new mongoose.Types.ObjectId(req.user.userId)
+    //         }
+    //     },
+    //     {
+    //         $unwind: "$transactions"
+    //     }
+    // ]);
+
+
+    const totalTransactions = await Wallet.find({ userId: req.user.userId }).select("transactions -_id");
 
     return {
-        users,
+        transactions: result[0].transactions,
         meta: {
-            total: totalUsers
+            total: totalTransactions[0].transactions.length
         }
     };
 }
 
-const getAllWallets = async () => {
-    const wallets = await Wallet.find({}).populate("userId", "name email phone");
-    const totalWallets = await Wallet.countDocuments({});
-    return {
-        wallets,
-        meta: {
-            total: totalWallets
-        }
-    };
-}
+const getTransactionById = async (req: Request, id: string) => {
 
-const walletBlockUnblock = async (walletId: string, blockStatus: boolean) => {
-    const result = await Wallet.findByIdAndUpdate(walletId, { isBlocked: blockStatus }, { new: true, runValidators: true });
+    const wallet = await Wallet.findOne({ userId: req.user.userId });
 
-    if (!result) {
-        throw new AppError(httpStatus.NOT_FOUND, "Wallet not found");
-    }
-
-    return result;
-
-}
-
-const getWalletDetails = async (walletId: string) => {
-    const wallet = await Wallet.findById(walletId).populate("userId", "name email phone");
     if (!wallet) {
         throw new AppError(httpStatus.NOT_FOUND, "Wallet not found");
     }
-    return wallet;
-}
 
-
-const getAllAgents = async () => {
-    const agents = await User.find({ role: "agent" }).select("-password -__v");
-    const totalAgents = await User.countDocuments({ role: "agent" });
-    return {
-        agents,
-        meta: {
-            total: totalAgents
-        }
-    };
-}
-
-const agentApproval = async (userId: string, approvalStatus: boolean) => {
-    const user = await User.findById(userId);
-    if (!user) {
-        throw new AppError(httpStatus.NOT_FOUND, "Agent not found");
-    }
-    if (user.role !== "agent") {
-        throw new AppError(httpStatus.BAD_REQUEST, "User is not an agent");
+    if (!wallet.transactions.includes(id)) {
+        throw new AppError(httpStatus.FORBIDDEN, "You are not authorized to view this transaction");
     }
 
-    const result = await User.findByIdAndUpdate(userId, { isApproved: approvalStatus }, { new: true, runValidators: true });
+    // const transaction = await Transaction.findById(id).populate("fromWallet").populate("toWallet").populate("fromUser").populate("toUser").populate("initiatedBy");
 
-    return result;
-}
 
-const getAllTransactions = async () => {
-    // const transactions = await Transaction.find({})
-    //     .populate({
-    //         path: "fromWallet",
-    //         select: "userId -_id",
-    //         populate: {
-    //             path: "userId",
-    //             select: "name email phone -_id"
-    //         }
-    //     })
-    //     .populate({
-    //         path: "toWallet",
-    //         select: "userId -_id",
-    //         populate: {
-    //             path: "userId",
-    //             select: "name email phone -_id"
-    //         }
-    //     })
-    //     .populate({
-    //         path: "initiatedBy",
-    //         select: "name email phone -_id"
-    //     });
-
-    const transactions = await Transaction.aggregate([
+    const transaction = await Transaction.aggregate([
+        { $match: { _id: new mongoose.Types.ObjectId(id) } },
         // Lookup fromWallet
         {
             $lookup: {
@@ -193,23 +144,12 @@ const getAllTransactions = async () => {
                 }
             }
         }
-    ]);
+    ])
 
-    const totalTransactions = await Transaction.countDocuments({});
-    return {
-        transactions,
-        meta: {
-            total: totalTransactions
-        }
-    };
+    return transaction;
 }
 
-export const AdminService = {
-    getAllUsers,
-    getAllWallets,
-    walletBlockUnblock,
-    getWalletDetails,
-    getAllAgents,
-    agentApproval,
-    getAllTransactions
+export const TransactionService = {
+    getAllTransactions,
+    getTransactionById
 }

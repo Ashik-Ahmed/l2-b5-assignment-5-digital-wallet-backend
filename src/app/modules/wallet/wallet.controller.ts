@@ -7,15 +7,8 @@ import { sendResponse } from "../../utils/sendResponse";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getWalletBalance = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { walletId } = req.params;
 
-    const result = await WalletService.getWalletBalance(walletId);
-
-    // res.status(httpStatus.OK).json({
-    //     success: true,
-    //     message: "Wallet balance retrieved successfully",
-    //     data: result
-    // });
+    const result = await WalletService.getWalletBalance(req);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
@@ -26,6 +19,8 @@ const getWalletBalance = catchAsync(async (req: Request, res: Response, next: Ne
 });
 
 const addMoneyToWallet = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    console.log("body data", req.body);
     const addMoney = await WalletService.addMoneyToWallet(req, req.body.amount);
 
     sendResponse(res, {
@@ -38,7 +33,7 @@ const addMoneyToWallet = catchAsync(async (req: Request, res: Response, next: Ne
 
 const cashOutByUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { phone, amount } = req.body;
-
+    console.log(req.body);
     const result = await WalletService.cashOutByUser(req, phone, amount);
 
     sendResponse(res, {
@@ -49,9 +44,22 @@ const cashOutByUser = catchAsync(async (req: Request, res: Response, next: NextF
     });
 });
 
+const sendMoney = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { phone, amount } = req.body;
+
+    const result = await WalletService.sendMoney(req, phone, amount);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Send money successful",
+        data: result
+    });
+});
 
 export const WalletController = {
     getWalletBalance,
     addMoneyToWallet,
-    cashOutByUser
+    cashOutByUser,
+    sendMoney
 };

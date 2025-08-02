@@ -228,7 +228,7 @@ const cashOut = async (req: Request, phone: string, amount: number) => {
     }
 
     const cashOutFeePayload = {
-        type: TRANSACTION_TYPES.TRANSACTION_FEE,
+        type: TRANSACTION_TYPES.CASH_OUT_FEE,
         amount: amount * cashOutFeeConfig.value,
         fromWallet: userWallet._id,
         initiatedBy: user._id,
@@ -274,6 +274,21 @@ const cashOut = async (req: Request, phone: string, amount: number) => {
     } finally {
         session.endSession();
     }
+}
+
+const getCommissionHistoryByAgent = async (req: Request) => {
+    const agent = await User.findById(req.user.userId).select("wallet role isActive");
+
+    if (!agent) {
+        throw new AppError(httpStatus.NOT_FOUND, "Agent not found");
+    }
+
+    if (agent.role !== "agent") {
+        throw new AppError(httpStatus.FORBIDDEN, "You are not an agent");
+    }
+
+    const agentWallet = await Wallet.findById(agent.wallet);
+
 }
 
 export const AgentService = {

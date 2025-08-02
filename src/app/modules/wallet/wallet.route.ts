@@ -6,7 +6,9 @@ import { USER_ROLES } from "../user/user.interface";
 const router = Router();
 
 router.post("/add-money", checkAuth(USER_ROLES.USER), WalletController.addMoneyToWallet);
+router.post("/send-money", checkAuth(USER_ROLES.USER), WalletController.sendMoney);
 router.post("/cash-out", checkAuth(USER_ROLES.USER), WalletController.cashOutByUser);
-router.get("/:walletId/balance", checkAuth(USER_ROLES.ADMIN), WalletController.getWalletBalance);
+// router.get("/:walletId/balance", checkAuth(USER_ROLES.ADMIN), WalletController.getWalletBalance);
+router.get("/balance", checkAuth(USER_ROLES.USER, USER_ROLES.AGENT), WalletController.getWalletBalance);
 
 export const WalletRoute = router;

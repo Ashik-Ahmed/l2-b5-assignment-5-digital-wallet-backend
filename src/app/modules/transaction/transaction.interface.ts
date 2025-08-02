@@ -8,7 +8,8 @@ export enum TRANSACTION_TYPES {
     CASH_IN = 'cash_in',
     CASH_OUT = 'cash_out',
     COMMISSION = 'commission',
-    TRANSACTION_FEE = 'transaction_fee'
+    CASH_OUT_FEE = 'cashout_fee',
+    SEND_MONEY_FEE = 'send_money_fee'
 }
 
 export enum TRANSACTION_STATUS {
