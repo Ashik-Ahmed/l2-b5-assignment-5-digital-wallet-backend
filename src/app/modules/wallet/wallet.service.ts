@@ -64,7 +64,6 @@ const addMoneyToWallet = async (req: Request, amount: number) => {
         };
 
     } catch (error: any) {
-        console.log("error from ealler service: ", error);
         await session.abortTransaction();
         throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, (error._message || "Transaction creation failed"));
     } finally {
@@ -97,7 +96,7 @@ const cashOutByUser = async (req: Request, phone: string, amount: number) => {
     if (amount > maxTransactionConfig.value) {
         throw new AppError(httpStatus.BAD_REQUEST, "Maximum transaction amount is " + maxTransactionConfig.value);
     }
-    console.log(phone);
+
     const agent = await User.findOne({ phone: phone }).select(" -password -_v");
     const user = await User.findById(req.user.userId).select("wallet role isActive");
 

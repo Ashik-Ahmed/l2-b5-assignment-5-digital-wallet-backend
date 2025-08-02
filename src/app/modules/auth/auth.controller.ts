@@ -7,6 +7,20 @@ import { AuthService } from "./auth.service";
 import AppError from "../../errorHelpers/AppError";
 import { setAuthCookie } from "../../utils/setCookie";
 
+
+
+const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const user = await AuthService.createUser(req.body);
+
+    sendResponse(res, {
+        statusCode: httpStatus.CREATED,
+        success: true,
+        message: "User created successfully",
+        data: user
+    });
+});
+
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const credentialLogin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
@@ -60,6 +74,7 @@ const getNewAccessToken = catchAsync(async (req: Request, res: Response, next: N
 
 
 export const AuthController = {
+    createUser,
     credentialLogin,
     getNewAccessToken
 }

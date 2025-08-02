@@ -1,0 +1,18 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.adminRoutes = void 0;
+const express_1 = require("express");
+const admin_controller_1 = require("./admin.controller");
+const checkAuth_1 = require("../../middlewares/checkAuth");
+const user_interface_1 = require("../user/user.interface");
+const validateRequest_1 = require("../../middlewares/validateRequest");
+const user_validation_1 = require("../user/user.validation");
+const router = (0, express_1.Router)();
+router.get("/users", (0, checkAuth_1.checkAuth)(user_interface_1.USER_ROLES.ADMIN), admin_controller_1.AdminController.getAllUsers);
+router.get("/wallets", (0, checkAuth_1.checkAuth)(user_interface_1.USER_ROLES.ADMIN), admin_controller_1.AdminController.getAllWallets);
+router.patch("/wallets/:walletId/block", (0, checkAuth_1.checkAuth)(user_interface_1.USER_ROLES.ADMIN), admin_controller_1.AdminController.walletBlockUnblock);
+router.get("/wallets/:walletId", (0, checkAuth_1.checkAuth)(user_interface_1.USER_ROLES.ADMIN), admin_controller_1.AdminController.getWalletDetails);
+router.get("/agents", (0, checkAuth_1.checkAuth)(user_interface_1.USER_ROLES.ADMIN), admin_controller_1.AdminController.getAllAgents);
+router.patch("/agents/:userId/approve", (0, checkAuth_1.checkAuth)(user_interface_1.USER_ROLES.ADMIN), (0, validateRequest_1.validateRequest)(user_validation_1.updateUserZodSchema), admin_controller_1.AdminController.agentApproval);
+router.get("/transactions", (0, checkAuth_1.checkAuth)(user_interface_1.USER_ROLES.ADMIN), admin_controller_1.AdminController.getAllTransactions);
+exports.adminRoutes = router;

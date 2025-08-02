@@ -6,7 +6,6 @@ export const validateRequest = (zodSchema: ZodObject) => async (req: Request, re
         req.body = await zodSchema.parseAsync(req.body);
         next();
     } catch (error) {
-        console.log(error);
         next(error);
     }
 }
