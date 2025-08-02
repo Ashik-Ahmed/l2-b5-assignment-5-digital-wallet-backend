@@ -39,6 +39,14 @@ const walletBlockUnblock = async (walletId: string, blockStatus: boolean) => {
 
 }
 
+const getWalletDetails = async (walletId: string) => {
+    const wallet = await Wallet.findById(walletId).populate("userId", "name email phone");
+    if (!wallet) {
+        throw new AppError(httpStatus.NOT_FOUND, "Wallet not found");
+    }
+    return wallet;
+}
+
 
 const getAllAgents = async () => {
     const agents = await User.find({ role: "agent" }).select("-password -__v");
@@ -200,6 +208,7 @@ export const AdminService = {
     getAllUsers,
     getAllWallets,
     walletBlockUnblock,
+    getWalletDetails,
     getAllAgents,
     agentApproval,
     getAllTransactions

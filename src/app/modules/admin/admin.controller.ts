@@ -54,6 +54,20 @@ const walletBlockUnblock = catchAsync(async (req: Request, res: Response, next: 
 });
 
 
+const getWalletDetails = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { walletId } = req.params;
+
+    const result = await AdminService.getWalletDetails(walletId);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Wallet details retrieved successfully",
+        data: result
+    });
+});
+
+
 const getAllAgents = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const result = await AdminService.getAllAgents();
 
@@ -98,6 +112,7 @@ export const AdminController = {
     getAllUsers,
     getAllWallets,
     walletBlockUnblock,
+    getWalletDetails,
     getAllAgents,
     agentApproval,
     getAllTransactions
