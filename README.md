@@ -15,7 +15,7 @@ This is the backend for a Digital Wallet system, developed with Node.js, Express
 
 ## API Endpoints
 
-🔐 Authentication Routes (/api/auth)
+🔐 Authentication Routes (/api/v1/auth)
 - POST   /register     - Register new user/agent
 - POST   /login        - Login user/agent/admin
 - POST   /logout       - Logout user
@@ -23,25 +23,25 @@ This is the backend for a Digital Wallet system, developed with Node.js, Express
 - PUT    /change-password - Change password
 
 
-💰 Wallet Routes (/api/wallets) [Auth Required - User/Agent]
+💰 Wallet Routes (/api/v1/wallets) [Auth Required - User/Agent]
 - GET    /balance     - Get wallet balance
 - POST   /add-money   - Add money to wallet
 - POST   /cash-out    - Cash out money from wallet
 - POST   /send-money  - Send money to another user
 
 
-🏪 Agent Routes (/api/agent) [Auth Required - Agent Only]
+🔁 Transaction Routes (/api/v1/transactions) [Auth Required]
+- GET    /            - Get transaction history [Logged In Users transactions]
+- GET    /:transactionId - Get transaction details
+
+
+🏪 Agent Routes (/api/v1/agent) [Auth Required - Agent Only]
 - POST   /cash-in     - Agent cash-in to user wallet
 - POST   /cash-out    - Agent cash-out from user wallet
 - GET    /commission-history - Get commission history
 
 
-🔁 Transaction Routes (/api/transactions) [Auth Required]
-- GET    /            - Get transaction history
-- GET    /:transactionId - Get transaction details
-
-
-👑 Admin Routes (/api/admin) [Auth Required - Admin Only]
+👑 Admin Routes (/api/v1/admin) [Auth Required - Admin Only]
 - GET    /users       - Get all users
 - GET    /wallets     - Get all wallets
 - PATCH  /wallets/:id/block - Block/unblock wallet
@@ -78,11 +78,16 @@ This is the backend for a Digital Wallet system, developed with Node.js, Express
 Create a `.env` file in the root directory and add the following environment variables:
 
 ```
-PORT=5000
-DB_URL=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-JWT_EXPIRES_IN=your_jwt_expiration_time
-BCRYPT_SALT_ROUNDS=your_bcrypt_salt_rounds
+PORT=port
+DB_URL=database_url
+NODE_ENV=node_env
+JWT_SECRET=jwt_secret
+JWT_EXPIRATION=jwt_expiration
+JWT_REFRESH_SECRET=refresh_secret
+JWT_REFRESH_EXPIRATION=refresh_expiration
+BCRYPT_SALT_ROUNDS=bcrypt_salt_rounds
+SUPER_ADMIN_EMAIL=super_admin_email
+SUPER_ADMIN_PASSWORD=super_admin_password
 ```
 
 ### Running the Application

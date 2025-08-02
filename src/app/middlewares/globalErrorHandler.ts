@@ -17,7 +17,7 @@ export const globalErrorHandler = (err: any, req: Request, res: Response, next: 
         statusCode = 500;
         message = err.message;
     }
-    console.log(err);
+
     res.status(statusCode).json({
         success: false,
         message,

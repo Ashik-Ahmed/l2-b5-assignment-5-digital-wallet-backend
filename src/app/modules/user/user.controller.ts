@@ -9,17 +9,6 @@ import AppError from "../../errorHelpers/AppError";
 import { USER_ROLES } from "./user.interface";
 
 
-const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const user = await UserService.createUser(req.body);
-
-    sendResponse(res, {
-        statusCode: httpStatus.CREATED,
-        success: true,
-        message: "User created successfully",
-        data: user
-    });
-});
-
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const userId = req.params.id;
@@ -54,6 +43,5 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 
 
 export const UserController = {
-    createUser,
     updateUser
 };

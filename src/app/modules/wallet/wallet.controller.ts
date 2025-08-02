@@ -20,7 +20,7 @@ const getWalletBalance = catchAsync(async (req: Request, res: Response, next: Ne
 
 const addMoneyToWallet = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
-    console.log("body data", req.body);
+
     const addMoney = await WalletService.addMoneyToWallet(req, req.body.amount);
 
     sendResponse(res, {
@@ -33,7 +33,7 @@ const addMoneyToWallet = catchAsync(async (req: Request, res: Response, next: Ne
 
 const cashOutByUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { phone, amount } = req.body;
-    console.log(req.body);
+
     const result = await WalletService.cashOutByUser(req, phone, amount);
 
     sendResponse(res, {
