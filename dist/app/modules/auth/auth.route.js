@@ -9,4 +9,5 @@ const router = (0, express_1.Router)();
 router.post("/register", (0, validateRequest_1.validateRequest)(user_validation_1.createUserZodSchema), auth_controller_1.AuthController.createUser);
 router.post("/login", auth_controller_1.AuthController.credentialLogin);
 router.post("/refresh-token", auth_controller_1.AuthController.getNewAccessToken);
+router.post("/logout", auth_controller_1.AuthController.logout);
 exports.AuthRoutes = router;

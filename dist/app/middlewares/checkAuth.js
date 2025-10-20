@@ -18,9 +18,9 @@ const jwt_1 = require("../utils/jwt");
 const env_1 = require("../config/env");
 const checkAuth = (...authRoles) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const accessToken = req.cookies.accessToken;
+        const accessToken = req.headers.authorization || req.cookies.accessToken;
         if (!accessToken) {
-            throw new AppError_1.default(403, "Access token is required");
+            throw new AppError_1.default(403, "Please login first");
         }
         // const verifiedToken = jwt.verify(accessToken, process.env.JWT_SECRET as string);
         const decodedToken = (0, jwt_1.verifyToken)(accessToken, env_1.envVars.JWT_SECRET);
