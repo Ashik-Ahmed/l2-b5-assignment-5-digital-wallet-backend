@@ -40,6 +40,9 @@ export const updateUserZodSchema = z.object({
         .string()
         .min(6, "Password must be at least 6 characters long")
         .optional(),
+    phone: z
+        .string()
+        .regex(/^(\+88)?01[3-9]\d{8}$/, "Please enter a valid Bangladeshi phone number"),
     role: z
         .enum(USER_ROLES)
         .optional(),
