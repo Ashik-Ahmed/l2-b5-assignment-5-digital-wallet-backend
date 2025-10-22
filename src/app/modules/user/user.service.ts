@@ -46,7 +46,17 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
     return newUpdatedUser
 }
 
+const changePassword = async (userId: string, newPassword: string) => {
+
+    const encryptedPassword = await bcrypt.hash(newPassword, Number(envVars.BCRYPT_SALT_ROUNDS));
+
+    const updatePassword = await User.findByIdAndUpdate(userId, { password: encryptedPassword }, { runValidators: true });
+
+    return updatePassword;
+}
+
 export const UserService = {
     getLoggedInUser,
-    updateUser
+    updateUser,
+    changePassword
 };

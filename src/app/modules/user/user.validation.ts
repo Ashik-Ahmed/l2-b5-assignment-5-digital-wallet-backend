@@ -42,7 +42,8 @@ export const updateUserZodSchema = z.object({
         .optional(),
     phone: z
         .string()
-        .regex(/^(\+88)?01[3-9]\d{8}$/, "Please enter a valid Bangladeshi phone number"),
+        .regex(/^(\+88)?01[3-9]\d{8}$/, "Please enter a valid Bangladeshi phone number")
+        .optional(),
     role: z
         .enum(USER_ROLES)
         .optional(),

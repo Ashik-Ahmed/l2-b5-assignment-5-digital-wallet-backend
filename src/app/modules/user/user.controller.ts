@@ -7,6 +7,8 @@ import { sendResponse } from "../../utils/sendResponse";
 import { JwtPayload } from "jsonwebtoken";
 import AppError from "../../errorHelpers/AppError";
 import { USER_ROLES } from "./user.interface";
+import bcrypt from "bcryptjs";
+import { User } from "./user.model";
 
 
 const getLoggedInUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -26,12 +28,6 @@ const getLoggedInUser = catchAsync(async (req: Request, res: Response, next: Nex
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const userId = req.params.id;
-
-    // const token = req.headers.authorization;
-    // const verifiedToken = verifyToken(token as string, envVars.JWT_SECRET) as JwtPayload;
-
-    // const decodedToken = req.user;
-
     const payload = req.body;
 
     if (payload.role) {
@@ -55,8 +51,39 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
     })
 })
 
+const changePassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const userId = req.params.id;
+    const { currentPassword, newPassword } = req.body;
+
+    const user = await User.findById(userId).select("+password -_id -_v");
+
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User not found");
+    }
+
+    const isPasswordMatched = await bcrypt.compare(currentPassword, user?.password as string);
+
+    if (!isPasswordMatched) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "Current password is incorrect");
+    }
+
+    const result = await UserService.changePassword(userId, newPassword);
+    console.log("password change result:", result);
+
+
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Password changed successfully",
+        data: result
+    })
+});
+
 
 export const UserController = {
     getLoggedInUser,
-    updateUser
+    updateUser,
+    changePassword
 };
