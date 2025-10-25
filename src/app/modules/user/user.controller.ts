@@ -52,11 +52,11 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 })
 
 const changePassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-
+    console.log(req.body);
     const userId = req.params.id;
     const { currentPassword, newPassword } = req.body;
-
-    const user = await User.findById(userId).select("+password -_id -_v");
+    console.log(userId, currentPassword, newPassword);
+    const user = await User.findById(userId).select("+password -_id");
 
     if (!user) {
         throw new AppError(httpStatus.NOT_FOUND, "User not found");
