@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request } from "express";
 import { Wallet } from "../wallet/wallet.model";
 import { Transaction } from "./transaction.model";
@@ -7,20 +8,37 @@ import mongoose from "mongoose";
 
 const getAllTransactions = async (req: Request) => {
 
-    const result = await Wallet.find({ userId: req.user.userId }).select("transactions -_id").populate({
-        path: "transactions",
-        options: {
-            sort: { createdAt: -1 } // Sort by createdAt descending for newest first
-        }
+    const filter = JSON.parse(JSON.stringify(req.query));
+
+    const walletDoc = await Wallet.findOne({ userId: req.user.userId })
+        .select("transactions -_id")
+        .populate({
+            path: "transactions",
+            match: filter,
+            options: {
+                sort: { createdAt: -1 },
+                populate: [{
+                    path: "fromWallet",
+                    select: "userId -_id",
+                    populate: { path: "userId", select: "name phone -_id" }
+                }, {
+                    path: "toWallet",
+                    select: "userId -_id",
+                    populate: { path: "userId", select: "name phone -_id" }
+                }]
+            }
+        });
+
+    const transactions = (walletDoc?.transactions || []).map(tx => {
+        const obj: any = (tx && typeof (tx as any).toObject === "function") ? (tx as any).toObject() : tx;
+        if (obj && obj.fromWallet && obj.fromWallet.userId) obj.fromWallet = obj.fromWallet.userId;
+        if (obj && obj.toWallet && obj.toWallet.userId) obj.toWallet = obj.toWallet.userId;
+        return obj;
     });
 
-    const totalTransactions = await Wallet.find({ userId: req.user.userId }).select("transactions -_id");
-
     return {
-        transactions: result[0].transactions,
-        meta: {
-            total: totalTransactions[0].transactions.length
-        }
+        transactions,
+        meta: { total: transactions.length }
     };
 }
 
