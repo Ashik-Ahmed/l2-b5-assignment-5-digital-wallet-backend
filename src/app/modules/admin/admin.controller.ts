@@ -97,7 +97,9 @@ const agentApproval = catchAsync(async (req: Request, res: Response, next: NextF
 
 
 const getAllTransactions = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const result = await AdminService.getAllTransactions();
+    const filterData = JSON.parse(JSON.stringify(req.query));
+
+    const result = await AdminService.getAllTransactions(filterData);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,

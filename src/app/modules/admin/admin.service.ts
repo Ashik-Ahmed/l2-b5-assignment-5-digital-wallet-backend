@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import AppError from "../../errorHelpers/AppError";
 import { Transaction } from "../transaction/transaction.model";
 import { User } from "../user/user.model";
@@ -73,7 +74,7 @@ const agentApproval = async (userId: string, approvalStatus: boolean) => {
     return result;
 }
 
-const getAllTransactions = async () => {
+const getAllTransactions = async (filter: any) => {
     // const transactions = await Transaction.find({})
     //     .populate({
     //         path: "fromWallet",
@@ -96,7 +97,25 @@ const getAllTransactions = async () => {
     //         select: "name email phone -_id"
     //     });
 
+    // Extract date and keep other fields
+    const { date, ...otherFilter } = filter;
+
+    // If date is provided, map it into createdAt range
+    const filterForQuery: any = { ...otherFilter };
+    if (date) {
+        const day = String(date).split("T")[0];
+        filterForQuery.createdAt = {
+            $gte: new Date(`${day}T00:00:00.000Z`),
+            $lte: new Date(`${day}T23:59:59.999Z`)
+        };
+    }
+
     const transactions = await Transaction.aggregate([
+        {
+            $match: {
+                ...filterForQuery
+            }
+        },
         // Lookup fromWallet
         {
             $lookup: {
@@ -191,6 +210,12 @@ const getAllTransactions = async () => {
                         else: null
                     }
                 }
+            }
+        },
+
+        {
+            $sort: {
+                createdAt: -1
             }
         }
     ]);

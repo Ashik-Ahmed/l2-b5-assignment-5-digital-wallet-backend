@@ -9,6 +9,13 @@ import mongoose from "mongoose";
 const getAllTransactions = async (req: Request) => {
 
     const filter = JSON.parse(JSON.stringify(req.query));
+    // console.log(filter);
+    // if (filter.createdAt) {
+    //     filter.createdAt = {
+    //         $gte: new Date(filter.createdAt)
+    //         $lte: new Date(filter.createdAt)
+    //     }
+    // }
 
     const walletDoc = await Wallet.findOne({ userId: req.user.userId })
         .select("transactions -_id")
