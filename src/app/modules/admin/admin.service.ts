@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import AppError from "../../errorHelpers/AppError";
 import { Transaction } from "../transaction/transaction.model";
+import { IUser } from "../user/user.interface";
 import { User } from "../user/user.model";
 import { Wallet } from "../wallet/wallet.model";
 import httpStatus from "http-status-codes";
@@ -229,6 +230,11 @@ const getAllTransactions = async (filter: any) => {
     };
 }
 
+const updateUserService = async (id: string, payload: Partial<IUser>) => {
+    const user = await User.findByIdAndUpdate(id, payload, { runValidators: true });
+    return user;
+}
+
 export const AdminService = {
     getAllUsers,
     getAllWallets,
@@ -236,5 +242,6 @@ export const AdminService = {
     getWalletDetails,
     getAllAgents,
     agentApproval,
-    getAllTransactions
+    getAllTransactions,
+    updateUserService
 }

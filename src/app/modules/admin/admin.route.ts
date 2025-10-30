@@ -9,6 +9,7 @@ const router = Router();
 
 
 router.get("/users", checkAuth(USER_ROLES.ADMIN), AdminController.getAllUsers);
+router.patch("/users/:userId", checkAuth(USER_ROLES.ADMIN), validateRequest(updateUserZodSchema), AdminController.updateUser);
 router.get("/wallets", checkAuth(USER_ROLES.ADMIN), AdminController.getAllWallets);
 router.patch("/wallets/:walletId/block", checkAuth(USER_ROLES.ADMIN), AdminController.walletBlockUnblock);
 router.get("/wallets/:walletId", checkAuth(USER_ROLES.ADMIN), AdminController.getWalletDetails);

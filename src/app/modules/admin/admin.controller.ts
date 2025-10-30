@@ -110,6 +110,18 @@ const getAllTransactions = catchAsync(async (req: Request, res: Response, next: 
     });
 });
 
+const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const result = await AdminService.updateUserService(id, req.body);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "User updated successfully",
+        data: result
+    });
+});
+
 export const AdminController = {
     getAllUsers,
     getAllWallets,
@@ -117,5 +129,6 @@ export const AdminController = {
     getWalletDetails,
     getAllAgents,
     agentApproval,
-    getAllTransactions
+    getAllTransactions,
+    updateUser
 }
