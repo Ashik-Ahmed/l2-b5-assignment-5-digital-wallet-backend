@@ -17,8 +17,9 @@ const AppError_1 = __importDefault(require("../errorHelpers/AppError"));
 const jwt_1 = require("../utils/jwt");
 const env_1 = require("../config/env");
 const checkAuth = (...authRoles) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     try {
-        const accessToken = req.headers.authorization || req.cookies.accessToken;
+        const accessToken = ((_b = (_a = req === null || req === void 0 ? void 0 : req.headers) === null || _a === void 0 ? void 0 : _a.authorization) === null || _b === void 0 ? void 0 : _b.split(" ")[1]) || req.cookies.accessToken;
         if (!accessToken) {
             throw new AppError_1.default(403, "Please login first");
         }

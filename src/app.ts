@@ -13,7 +13,7 @@ app.use(cookieParser());
 app.use(express.json());
 // app.use(cors());
 app.use(cors({
-    origin: "http://localhost:3000", // exact origin — not '*'
+    origin: ["http://localhost:3000", "https://l2-b5-assignment-6-digital-wallet-f.vercel.app"], // exact origin — not '*'
     credentials: true,               // allow cookies/credentials
 }));
 

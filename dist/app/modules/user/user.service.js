@@ -46,7 +46,13 @@ const updateUser = (userId, payload, decodedToken) => __awaiter(void 0, void 0, 
     const newUpdatedUser = yield user_model_1.User.findByIdAndUpdate(userId, payload, { new: true, runValidators: true });
     return newUpdatedUser;
 });
+const changePassword = (userId, newPassword) => __awaiter(void 0, void 0, void 0, function* () {
+    const encryptedPassword = yield bcryptjs_1.default.hash(newPassword, Number(env_1.envVars.BCRYPT_SALT_ROUNDS));
+    const updatePassword = yield user_model_1.User.findByIdAndUpdate(userId, { password: encryptedPassword }, { runValidators: true });
+    return updatePassword;
+});
 exports.UserService = {
     getLoggedInUser,
-    updateUser
+    updateUser,
+    changePassword
 };

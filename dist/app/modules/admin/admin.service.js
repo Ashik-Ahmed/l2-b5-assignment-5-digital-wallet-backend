@@ -8,18 +8,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminService = void 0;
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 const transaction_model_1 = require("../transaction/transaction.model");
 const user_model_1 = require("../user/user.model");
 const wallet_model_1 = require("../wallet/wallet.model");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
-    const users = yield user_model_1.User.find({}).select("-password -__v");
+    const users = yield user_model_1.User.find({ role: "user" }).select("-password -__v");
     const totalUsers = yield user_model_1.User.countDocuments({});
     return {
         users,
@@ -73,7 +85,7 @@ const agentApproval = (userId, approvalStatus) => __awaiter(void 0, void 0, void
     const result = yield user_model_1.User.findByIdAndUpdate(userId, { isApproved: approvalStatus }, { new: true, runValidators: true });
     return result;
 });
-const getAllTransactions = () => __awaiter(void 0, void 0, void 0, function* () {
+const getAllTransactions = (filter) => __awaiter(void 0, void 0, void 0, function* () {
     // const transactions = await Transaction.find({})
     //     .populate({
     //         path: "fromWallet",
@@ -95,7 +107,21 @@ const getAllTransactions = () => __awaiter(void 0, void 0, void 0, function* () 
     //         path: "initiatedBy",
     //         select: "name email phone -_id"
     //     });
+    // Extract date and keep other fields
+    const { date } = filter, otherFilter = __rest(filter, ["date"]);
+    // If date is provided, map it into createdAt range
+    const filterForQuery = Object.assign({}, otherFilter);
+    if (date) {
+        const day = String(date).split("T")[0];
+        filterForQuery.createdAt = {
+            $gte: new Date(`${day}T00:00:00.000Z`),
+            $lte: new Date(`${day}T23:59:59.999Z`)
+        };
+    }
     const transactions = yield transaction_model_1.Transaction.aggregate([
+        {
+            $match: Object.assign({}, filterForQuery)
+        },
         // Lookup fromWallet
         {
             $lookup: {
@@ -183,6 +209,11 @@ const getAllTransactions = () => __awaiter(void 0, void 0, void 0, function* () 
                     }
                 }
             }
+        },
+        {
+            $sort: {
+                createdAt: -1
+            }
         }
     ]);
     const totalTransactions = yield transaction_model_1.Transaction.countDocuments({});
@@ -193,6 +224,10 @@ const getAllTransactions = () => __awaiter(void 0, void 0, void 0, function* () 
         }
     };
 });
+const updateUserService = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.User.findByIdAndUpdate(id, payload, { runValidators: true });
+    return user;
+});
 exports.AdminService = {
     getAllUsers,
     getAllWallets,
@@ -200,5 +235,6 @@ exports.AdminService = {
     getWalletDetails,
     getAllAgents,
     agentApproval,
-    getAllTransactions
+    getAllTransactions,
+    updateUserService
 };

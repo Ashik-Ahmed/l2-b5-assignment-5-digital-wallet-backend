@@ -19,23 +19,43 @@ const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const getAllTransactions = (req) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield wallet_model_1.Wallet.find({ userId: req.user.userId }).select("transactions -_id").populate("transactions").sort({ createdAt: -1 });
-    // const result = await Wallet.aggregate([
-    //     {
-    //         $match: {
-    //             userId: new mongoose.Types.ObjectId(req.user.userId)
-    //         }
-    //     },
-    //     {
-    //         $unwind: "$transactions"
+    const filter = JSON.parse(JSON.stringify(req.query));
+    // console.log(filter);
+    // if (filter.createdAt) {
+    //     filter.createdAt = {
+    //         $gte: new Date(filter.createdAt)
+    //         $lte: new Date(filter.createdAt)
     //     }
-    // ]);
-    const totalTransactions = yield wallet_model_1.Wallet.find({ userId: req.user.userId }).select("transactions -_id");
-    return {
-        transactions: result[0].transactions,
-        meta: {
-            total: totalTransactions[0].transactions.length
+    // }
+    const walletDoc = yield wallet_model_1.Wallet.findOne({ userId: req.user.userId })
+        .select("transactions -_id")
+        .populate({
+        path: "transactions",
+        match: filter,
+        options: {
+            sort: { createdAt: -1 },
+            populate: [{
+                    path: "fromWallet",
+                    select: "userId -_id",
+                    populate: { path: "userId", select: "name phone -_id" }
+                }, {
+                    path: "toWallet",
+                    select: "userId -_id",
+                    populate: { path: "userId", select: "name phone -_id" }
+                }]
         }
+    });
+    const transactions = ((walletDoc === null || walletDoc === void 0 ? void 0 : walletDoc.transactions) || []).map(tx => {
+        const obj = (tx && typeof tx.toObject === "function") ? tx.toObject() : tx;
+        if (obj && obj.fromWallet && obj.fromWallet.userId)
+            obj.fromWallet = obj.fromWallet.userId;
+        if (obj && obj.toWallet && obj.toWallet.userId)
+            obj.toWallet = obj.toWallet.userId;
+        return obj;
+    });
+    return {
+        transactions,
+        meta: { total: transactions.length }
     };
 });
 const getTransactionById = (req, id) => __awaiter(void 0, void 0, void 0, function* () {

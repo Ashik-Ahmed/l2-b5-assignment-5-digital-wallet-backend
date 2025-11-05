@@ -88,13 +88,24 @@ const agentApproval = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter
     });
 }));
 const getAllTransactions = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield admin_service_1.AdminService.getAllTransactions();
+    const filterData = JSON.parse(JSON.stringify(req.query));
+    const result = yield admin_service_1.AdminService.getAllTransactions(filterData);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,
         success: true,
         message: "Transactions retrieved successfully",
         data: result.transactions,
         meta: result.meta
+    });
+}));
+const updateUser = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.params;
+    const result = yield admin_service_1.AdminService.updateUserService(userId, req.body);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.OK,
+        success: true,
+        message: "User updated successfully",
+        data: result
     });
 }));
 exports.AdminController = {
@@ -104,5 +115,6 @@ exports.AdminController = {
     getWalletDetails,
     getAllAgents,
     agentApproval,
-    getAllTransactions
+    getAllTransactions,
+    updateUser
 };

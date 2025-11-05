@@ -9,6 +9,7 @@ const validateRequest_1 = require("../../middlewares/validateRequest");
 const user_validation_1 = require("../user/user.validation");
 const router = (0, express_1.Router)();
 router.get("/users", (0, checkAuth_1.checkAuth)(user_interface_1.USER_ROLES.ADMIN), admin_controller_1.AdminController.getAllUsers);
+router.patch("/users/:userId", (0, checkAuth_1.checkAuth)(user_interface_1.USER_ROLES.ADMIN), (0, validateRequest_1.validateRequest)(user_validation_1.updateUserZodSchema), admin_controller_1.AdminController.updateUser);
 router.get("/wallets", (0, checkAuth_1.checkAuth)(user_interface_1.USER_ROLES.ADMIN), admin_controller_1.AdminController.getAllWallets);
 router.patch("/wallets/:walletId/block", (0, checkAuth_1.checkAuth)(user_interface_1.USER_ROLES.ADMIN), admin_controller_1.AdminController.walletBlockUnblock);
 router.get("/wallets/:walletId", (0, checkAuth_1.checkAuth)(user_interface_1.USER_ROLES.ADMIN), admin_controller_1.AdminController.getWalletDetails);

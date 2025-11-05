@@ -19,6 +19,8 @@ const catchAsync_1 = require("../../utils/catchAsync");
 const sendResponse_1 = require("../../utils/sendResponse");
 const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 const user_interface_1 = require("./user.interface");
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const user_model_1 = require("./user.model");
 const getLoggedInUser = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
     const user = yield user_service_1.UserService.getLoggedInUser(userId);
@@ -31,9 +33,6 @@ const getLoggedInUser = (0, catchAsync_1.catchAsync)((req, res, next) => __await
 }));
 const updateUser = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.params.id;
-    // const token = req.headers.authorization;
-    // const verifiedToken = verifyToken(token as string, envVars.JWT_SECRET) as JwtPayload;
-    // const decodedToken = req.user;
     const payload = req.body;
     if (payload.role) {
         if (req.user.role !== user_interface_1.USER_ROLES.ADMIN) {
@@ -53,7 +52,30 @@ const updateUser = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(vo
         data: user
     });
 }));
+const changePassword = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.body);
+    const userId = req.params.id;
+    const { currentPassword, newPassword } = req.body;
+    console.log(userId, currentPassword, newPassword);
+    const user = yield user_model_1.User.findById(userId).select("+password -_id");
+    if (!user) {
+        throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "User not found");
+    }
+    const isPasswordMatched = yield bcryptjs_1.default.compare(currentPassword, user === null || user === void 0 ? void 0 : user.password);
+    if (!isPasswordMatched) {
+        throw new AppError_1.default(http_status_codes_1.default.UNAUTHORIZED, "Current password is incorrect");
+    }
+    const result = yield user_service_1.UserService.changePassword(userId, newPassword);
+    console.log("password change result:", result);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_codes_1.default.OK,
+        success: true,
+        message: "Password changed successfully",
+        data: result
+    });
+}));
 exports.UserController = {
     getLoggedInUser,
-    updateUser
+    updateUser,
+    changePassword
 };
