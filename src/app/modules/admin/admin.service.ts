@@ -7,7 +7,7 @@ import { Wallet } from "../wallet/wallet.model";
 import httpStatus from "http-status-codes";
 
 const getAllUsers = async () => {
-    const users = await User.find({}).select("-password -__v");
+    const users = await User.find({ role: "user" }).select("-password -__v");
 
     const totalUsers = await User.countDocuments({});
 
@@ -231,6 +231,7 @@ const getAllTransactions = async (filter: any) => {
 }
 
 const updateUserService = async (id: string, payload: Partial<IUser>) => {
+
     const user = await User.findByIdAndUpdate(id, payload, { runValidators: true });
     return user;
 }

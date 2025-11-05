@@ -111,8 +111,9 @@ const getAllTransactions = catchAsync(async (req: Request, res: Response, next: 
 });
 
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    const result = await AdminService.updateUserService(id, req.body);
+    const { userId } = req.params;
+
+    const result = await AdminService.updateUserService(userId, req.body);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
