@@ -6,12 +6,14 @@ const setAuthCookie = (res, tokenInfo) => {
         res.cookie("accessToken", tokenInfo.accessToken, {
             httpOnly: true,
             secure: true, // Set to true if using HTTPS
+            sameSite: "lax"
         });
     }
     if (tokenInfo.refreshToken) {
         res.cookie("refreshToken", tokenInfo.refreshToken, {
             httpOnly: true,
             secure: true, // Set to true if using HTTPS
+            sameSite: "lax"
         });
     }
 };
